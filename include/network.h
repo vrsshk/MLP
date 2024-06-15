@@ -5,183 +5,164 @@
 
 /**
  * @struct data_network
- * @brief Structure to hold network configuration data.
+ * @brief Структура для хранения конфигурационных данных сети.
  * 
- * This structure is used to store the configuration data for a neural network.
+ * Эта структура используется для хранения количества слоев и количества нейронов на каждом слое
  */
 struct data_network {
     /**
-     * @brief Number of layers in the network.
-     * 
-     * Stores the number of layers in the network.
+     * @brief Количество слоев в сети.
      */
     int L;
 
     /**
-     * @brief Vector of layer sizes.
-     * 
-     * Stores the size of each layer in the network.
+     * @brief Вектор размеров слоев.
      */
     std::vector<int> size;
 };
 
 /**
  * @class Network
- * @brief Class to represent a neural network.
+ * @brief Класс для представления нейронной сети.
  * 
- * This class provides an interface for creating and manipulating neural networks.
- * It allows you to create a network with a specified configuration, set input values,
- * perform forward feed, backpropagation, and weight updates, and save and read weights.
+ * Этот класс предоставляет интерфейс для создания и манипулирования нейронными сетями.
+ * Он позволяет создавать сеть с указанной конфигурацией, задавать входные значения,
+ * выполнять прямое распространение, обратное распространение ошибки и обновление весов, а также сохранять и читать веса.
  */
 class Network {
 private:
     /**
-     * @brief Number of layers in the network.
-     * 
-     * Stores the number of layers in the network.
+     * @brief Количество слоев в сети.
      */
     int L;
 
     /**
-     * @brief Vector of layer sizes.
-     * 
-     * Stores the size of each layer in the network.
+     * @brief Вектор размеров слоев.
      */
     std::vector<int> size;
 
 public:
     /**
-     * @brief Activation function.
-     * 
-     * Stores the activation function used in the network.
+     * @brief Функция активации.
      */
     Func f;
 
     /**
-     * @brief Vector of weight matrices.
+     * @brief Вектор матриц весов.
      * 
-     * Stores the weight matrices for each layer in the network.
+     * Хранит матрицы весов для каждого слоя в сети.
      */
     std::vector<Matrix> weights;
 
     /**
-     * @brief Vector of bias values.
+     * @brief Вектор значений смещения.
      * 
-     * Stores the bias values for each layer in the network.
+     * Хранит значения смещения для каждого слоя в сети.
      */
-    std::vector<std::vector<double>> bios;
+    std::vector<std::vector<double>> bias;
 
     /**
-     * @brief Vector of neuron values.
+     * @brief Вектор значений нейронов.
      * 
-     * Stores the values of each neuron in the network.
+     * Хранит значения каждого нейрона в сети.
      */
     std::vector<std::vector<double>> neurons_val;
 
     /**
-     * @brief Vector of neuron error values.
+     * @brief Вектор ошибок нейронов.
      * 
-     * Stores the error values of each neuron in the network.
+     * Хранит ошибки каждого нейрона в сети.
      */
     std::vector<std::vector<double>> neurons_err;
 
     /**
-     * @brief Vector of neuron bias values.
+     * @brief Вектор значений смещения нейронов.
      * 
-     * Stores the bias values of each neuron in the network.
+     * Хранит значения смещения каждого нейрона в сети.
      */
-    std::vector<double> neurons_bios_val;
+    std::vector<double> neurons_bias_val;
 
     /**
-     * @brief Default constructor.
+     * @brief Конструктор по умолчанию.
      * 
-     * Initializes the network with default values.
+     * Инициализирует сеть с значениями по умолчанию.
      */
     Network() : L(0), size() {}
 
     /**
-     * @brief Constructor with configuration data.
+     * @brief Конструктор с конфигурационными данными.
      * 
-     * Initializes the network with the specified configuration data.
+     * Инициализирует сеть с указанными конфигурационными данными.
      * 
-     * @param data Configuration data for the network.
+     * @param data Конфигурационные данные для сети.
      */
     Network(const data_network& data);
 
     /**
-     * @brief Prints the network configuration.
+     * @brief Печатает конфигурацию сети.
      * 
-     * Outputs the network configuration to the console.
+     * Выводит конфигурацию сети в консоль.
      */
     void PrintConfig();
 
     /**
-     * @brief Sets the input values for the network.
+     * @brief Задает входные значения для сети.
      * 
-     * Sets the input values for the network.
-     * 
-     * @param values Input values for the network.
+     * @param values Входные значения для сети.
      */
     void SetInput(const std::vector<double>& values);
 
     /**
-     * @brief Performs forward feed.
+     * @brief Выполняет прямое распространение.
      * 
-     * Performs forward feed through the network.
-     * 
-     * @return The output value of the network.
+     * @return Выходное значение сети.
      */
     double ForwardFeed();
 
     /**
-     * @brief Searches for the maximum index in a vector.
+     * @brief Ищет индекс максимального значения в векторе.
      * 
-     * Searches for the maximum index in a vector.
-     * 
-     * @param value Vector to search.
-     * @return The maximum index in the vector.
+     * @param value Вектор для поиска.
+     * @return Индекс максимального значения в векторе.
      */
     int SearchMaxIndex(const std::vector<double>& value);
 
     /**
-     * @brief Prints the neuron values.
+     * @brief Печатает значения нейронов.
      * 
-     * Outputs the neuron values to the console.
-     * 
-     * @param layers Number of layers to print.
+     * @param layers Количество слоев для печати.
      */
     void PrintValues(int layers);
 
-    /**
-     * @brief Performs backpropagation.
+     /**
+     * @brief Выполняет обратное распространение ошибки.
      * 
-     * Performs backpropagation through the network.
+     * Выполняет обратное распространение ошибки через сеть.
      * 
-     * @param expect Expected output value.
+     * @param expect Ожидаемое выходное значение.
      */
     void BackPropogation(double expect);
 
     /**
-     * @brief Updates the weights.
+     * @brief Обновляет веса.
      * 
-     * Updates the weights of the network using the specified learning rate.
+     * Обновляет веса сети с помощью указанной скорости обучения.
      * 
-     * @param lr Learning rate.
+     * @param lr Скорость обучения.
      */
     void WeightsUpdater(double lr);
 
     /**
-     * @brief Saves the weights to a file.
+     * @brief Сохраняет веса в файл.
      * 
-     * Saves the weights of the network to a file.
+     * Сохраняет веса сети в файл.
      */
     void SaveWeights();
 
     /**
-     * @brief Reads the weights from a file.
+     * @brief Читает веса из файла.
      * 
-     * Reads the weights of the network from a file.
+     * Читает веса сети из файла.
      */
     void ReadWeights();
 };
-

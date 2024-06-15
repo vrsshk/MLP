@@ -5,7 +5,7 @@ Matrix::Matrix(size_t row, size_t col)
 
 void Matrix::set(size_t i, size_t j, double value) {
     if (i >= row || j >= col) {
-        throw std::out_of_range("Индекс вне диапазона");
+        throw std::out_of_range("Wrong coordinates");
     }
     matrix[i][j] = value;
 }

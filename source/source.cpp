@@ -1,8 +1,4 @@
 #include "network.h"
-#include <chrono>
-#include <sstream>
-#include <vector>
-#include <string>
 
 
 struct data_info {
@@ -10,6 +6,9 @@ struct data_info {
 	std::vector<double> pixels;
 };
 
+/**
+ * Подсчет количества строк в CSV файле
+ */
 int RowsInCSV(const std::string& path) {
 	std::ifstream fin(path);
 	int rowCount = 0;
@@ -20,6 +19,9 @@ int RowsInCSV(const std::string& path) {
 	return rowCount;
 }
 
+/**
+ * Чтение конфигурационного файла
+ */
 data_network ReadDataNetwork(std::string path) {
 	std::ifstream fin(path);
 	if (!fin.is_open()) {
@@ -46,6 +48,9 @@ data_network ReadDataNetwork(std::string path) {
 	return data;
 }
 
+/**
+ * Чтения данных
+ */
 std::vector<data_info> ReadData(std::string path, const data_network& data_NW) {
 	std::ifstream fin(path);
 	if (!fin.is_open()) {

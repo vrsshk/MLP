@@ -4,20 +4,20 @@ Network::Network(const data_network& data) : L(data.L), size(data.size) {
     f.Set();
     srand(time(NULL));
     weights.resize(L - 1);
-    bios.resize(L - 1);
-    neurons_bios_val.resize(L - 1);
+    bias.resize(L - 1);
+    neurons_bias_val.resize(L - 1);
     neurons_val.resize(L);
     neurons_err.resize(L);
     for (int i = 0; i < L - 1; ++i) {
-        bios[i].resize(size[i + 1]);
+        bias[i].resize(size[i + 1]);
         weights[i] = Matrix(size[i+1], size[i]);
         for (int j = 0; j < size[i + 1]; ++j) {
-            bios[i][j] = (rand() % 50) * 0.06;
+            bias[i][j] = (rand() % 50) * 0.06;
         }
         weights[i].Rand();
     }
     for (int i = 0; i < L - 1; ++i) {
-        neurons_bios_val[i] = 1;
+        neurons_bias_val[i] = 1;
     }
     for (int i = 0; i != L; ++i) {
         neurons_val[i].resize(size[i]);
@@ -47,7 +47,7 @@ void Network::SetInput(const std::vector<double>& values) {
 double Network::ForwardFeed() {
     for (int k = 1; k < L; ++k) {
         neurons_val[k] = Matrix::MultVec(weights[k - 1], neurons_val[k - 1]);
-        neurons_val[k] = Matrix::SumVec(neurons_val[k], bios[k - 1]);
+        neurons_val[k] = Matrix::SumVec(neurons_val[k], bias[k - 1]);
         f.Use(neurons_val[k]);
     }
     int pred = SearchMaxIndex(neurons_val[L - 1]);
@@ -104,15 +104,14 @@ void Network::WeightsUpdater(double lr) {
     }
     for (int i = 0; i < L - 1; ++i) {
         for (int k = 0; k < size[i]; ++k) {
-            if (k < bios[i].size()) {
-                bios[i][k] += neurons_err[i + 1][k] * lr;
+            if (k < bias[i].size()) {
+                bias[i][k] += neurons_err[i + 1][k] * lr;
             }
         }
     }
 }
 
 void Network::BackPropogation(double expect) {
-    // ������������ ������ ��� ���������� ����
     for (int i = 0; i < size[L - 1]; i++) {
         if (i != int(expect)) {
             neurons_err[L - 1][i] = -1.0 * neurons_val[L - 1][i] * f.UseDerivative(neurons_val[L - 1][i]);
@@ -122,7 +121,6 @@ void Network::BackPropogation(double expect) {
         }
     }
 
-    // ������������ ������ ��� ��������� �����
     for (int k = L - 2; k >= 0; k--) {
         neurons_err[k] = Matrix::MultVec(weights[k].transpose(), neurons_err[k + 1]);
         for (int j = 0; j < size[k]; j++) {
@@ -137,11 +135,11 @@ void Network::SaveWeights() {
     if (!fout.is_open()) {
         std::cout << "Error opening file\n";
             std::cout << "Press enter to continue...";
-    std::cin.get(); // wait for the user to press enter
+    std::cin.get();
     } 
     for (int i = 0; i < L - 1; ++i) {
         for (int j = 0; j < size[i + 1]; ++j) {
-            fout << bios[i][j] << " ";
+            fout << bias[i][j] << " ";
         }
     }
     std::cout << "Weights saved \n";
@@ -154,14 +152,14 @@ void Network::ReadWeights() {
     if (!fin.is_open()) {
         std::cout << "Error opening file\n";
             std::cout << "Press enter to continue...";
-    std::cin.get(); // wait for the user to press enter
+    std::cin.get(); 
     }
     for (int i = 0; i < L - 1; ++i) {
         fin >> weights[i];
     }
     for (int i = 0; i < L - 1; ++i) {
         for (int j = 0; j < size[i + 1]; ++j) {
-            fin >> bios[i][j];
+            fin >> bias[i][j];
         }
     }
     std::cout << "Weights saved \n";
